@@ -13,6 +13,9 @@
 		A65565C9288986380078296A /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = A65565C8288986380078296A /* FirebaseStorage */; };
 		A65565CB288986990078296A /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65565CA288986990078296A /* FirebaseManager.swift */; };
 		A65565CD288987530078296A /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65565CC288987530078296A /* User.swift */; };
+		A65565CF28899F760078296A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A65565CE28899F760078296A /* GoogleService-Info.plist */; };
+		A65565D128899FFD0078296A /* MainPostsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65565D028899FFD0078296A /* MainPostsView.swift */; };
+		A65565D32889A05F0078296A /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65565D22889A05F0078296A /* Post.swift */; };
 		A6BC5D3B28882CD2005330F4 /* ChatAndTweetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BC5D3A28882CD2005330F4 /* ChatAndTweetApp.swift */; };
 		A6BC5D3F28882CD3005330F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6BC5D3E28882CD3005330F4 /* Assets.xcassets */; };
 		A6BC5D4228882CD3005330F4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6BC5D4128882CD3005330F4 /* Preview Assets.xcassets */; };
@@ -22,6 +25,9 @@
 /* Begin PBXFileReference section */
 		A65565CA288986990078296A /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		A65565CC288987530078296A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		A65565CE28899F760078296A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		A65565D028899FFD0078296A /* MainPostsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPostsView.swift; sourceTree = "<group>"; };
+		A65565D22889A05F0078296A /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		A6BC5D3728882CD2005330F4 /* ChatAndTweet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatAndTweet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6BC5D3A28882CD2005330F4 /* ChatAndTweetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAndTweetApp.swift; sourceTree = "<group>"; };
 		A6BC5D3E28882CD3005330F4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -64,10 +70,13 @@
 			isa = PBXGroup;
 			children = (
 				A6BC5D3A28882CD2005330F4 /* ChatAndTweetApp.swift */,
+				A65565CE28899F760078296A /* GoogleService-Info.plist */,
 				A6BC5D4828882EA4005330F4 /* LoginAndRegister.swift */,
+				A65565D028899FFD0078296A /* MainPostsView.swift */,
 				A6BC5D3E28882CD3005330F4 /* Assets.xcassets */,
 				A65565CA288986990078296A /* FirebaseManager.swift */,
 				A65565CC288987530078296A /* User.swift */,
+				A65565D22889A05F0078296A /* Post.swift */,
 				A6BC5D4028882CD3005330F4 /* Preview Content */,
 			);
 			path = ChatAndTweet;
@@ -150,6 +159,7 @@
 			files = (
 				A6BC5D4228882CD3005330F4 /* Preview Assets.xcassets in Resources */,
 				A6BC5D3F28882CD3005330F4 /* Assets.xcassets in Resources */,
+				A65565CF28899F760078296A /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,7 +171,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A65565CB288986990078296A /* FirebaseManager.swift in Sources */,
+				A65565D128899FFD0078296A /* MainPostsView.swift in Sources */,
 				A6BC5D3B28882CD2005330F4 /* ChatAndTweetApp.swift in Sources */,
+				A65565D32889A05F0078296A /* Post.swift in Sources */,
 				A65565CD288987530078296A /* User.swift in Sources */,
 				A6BC5D4928882EA4005330F4 /* LoginAndRegister.swift in Sources */,
 			);
