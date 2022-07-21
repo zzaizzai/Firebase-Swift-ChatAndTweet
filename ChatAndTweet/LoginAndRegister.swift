@@ -6,25 +6,7 @@
 //
 
 import SwiftUI
-
-class LoginViewModel: ObservableObject {
-    
-    @Published var errorMessage = "errorMessage"
-    
-    init(){
-        
-    }
-    
-    
-    func login(email: String, password: String) {
-        print("email: \(email), password: \(password)")
-        
-    }
-    
-    func register(name: String, email: String, password: String, passwordCheck: String) {
-        print(name, email, password, passwordCheck)
-    }
-}
+import Firebase
 
 
 struct RegisterView: View {
@@ -32,7 +14,8 @@ struct RegisterView: View {
     @State var email = ""
     @State var password = ""
     @State var passwordCheck = ""
-    @ObservedObject var vm = LoginViewModel()
+    @State var errorMessage = ""
+    @State var successMessage = ""
     
     @Environment(\.presentationMode) var presentation
     
@@ -66,12 +49,27 @@ struct RegisterView: View {
                         Text("Do you have account?")
                     }
                     
-                    Text(vm.errorMessage)
-                        .foregroundColor(Color.red)
+                    ZStack {
+                        Text(self.errorMessage)
+                            .foregroundColor(Color.red)
                         .padding()
+                        
+                        Text(self.successMessage)
+                            .foregroundColor(Color.blue)
+                            .padding()
+                    }
                     
                     Button {
-                        print("")
+                        print("photo")
+                    } label: {
+                        Image(systemName: "photo")
+                            .font(.system(size: 45))
+                            .foregroundColor(Color.black)
+                    }
+
+                    
+                    Button {
+                        register(name: self.name, email: self.email, password: self.password, passwordCheck: self.passwordCheck)
                     } label: {
                         Spacer()
                         Text("Sign Up")
@@ -93,14 +91,44 @@ struct RegisterView: View {
         
     }
     
+    func register(name: String, email: String, password: String, passwordCheck: String) {
+        if name.count < 4 || email.count < 4 || password.count < 4 {
+            self.errorMessage = "enter at least 4 characters"
+            self.successMessage = ""
+            return
+        }
+        
+        if password != passwordCheck {
+            self.errorMessage = "incorrect password check"
+            self.successMessage = ""
+            return
+        }
+        FirebaseManager.shared.auth.createUser(withEmail: self.email, password: self.password) { result, error in
+            if let error = error {
+                self.errorMessage = "\(error)"
+                return
+            }
+            self.successMessage = "signed up"
+            self.errorMessage = ""
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.presentation.wrappedValue.dismiss()
+            }
+        }
+
+
+            
+        
+    }
+    
 }
 
 struct LoginView: View {
-    @State var isRegisterMode = false
     @State var email = ""
     @State var password = ""
+    @State var errorMessage = ""
+    @State var successMessage = ""
     
-    @ObservedObject var vm = LoginViewModel()
     
     var body: some View {
         
@@ -123,9 +151,6 @@ struct LoginView: View {
                         .padding(.vertical, 8)
                         .padding(.horizontal)
                         .autocapitalization(.none)
-
-                        
-                        
                         
                         NavigationLink {
                             RegisterView()
@@ -134,12 +159,20 @@ struct LoginView: View {
                             Text("Do you wanna join us??")
                         }
                         
-                        Text(vm.errorMessage)
-                            .foregroundColor(Color.red)
+                        ZStack {
+                            Text(self.errorMessage)
+                                .foregroundColor(Color.red)
                             .padding()
+                            
+                            Text(self.successMessage)
+                                .foregroundColor(Color.blue)
+                                .padding()
+                        }
+                        
+
                         
                         Button {
-                            print("")
+                            login(email: self.email, password: self.password)
                         } label: {
                             Spacer()
                             Text("Login")
@@ -154,14 +187,28 @@ struct LoginView: View {
                 .navigationTitle("Login")
                 .background(Color(.init(white: 0, alpha: 0.14)))
             }
-
-        
-
-
-
     }
     
+    func login(email: String, password: String) {
+        print("email: \(email), password: \(password)")
+        if email.count < 4 || password.count < 4 {
+            self.errorMessage = "enter at least 4 characters"
+            self.successMessage = ""
+            return
+        }
+        FirebaseManager.shared.auth.signIn(withEmail: self.email, password: self.password) {
+            resulr, error in
+            if let error = error {
+                self.successMessage = ""
+                self.errorMessage = "\(error)"
+                return
+            }
+            
+            self.successMessage = "logged in"
+            self.errorMessage = ""
+        }
 
+    }
 }
 
 
