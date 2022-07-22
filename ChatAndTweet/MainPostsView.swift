@@ -27,19 +27,37 @@ struct PostView: View {
                         Text("date")
                             .foregroundColor(Color.gray)
                     }
-                    Text("content")
-                        .font(.system(size: 15))
+                    Text("content content content content content content content content content content content content ")
+                        .font(.system(size: 20))
                     
                     HStack{
-                        Image(systemName: "arrow.counterclockwise")
+                        
+                        Button {
+                            print("i like you")
+                        } label: {
+                            Image(systemName: "arrow.counterclockwise")
+                                .foregroundColor(Color.black)
+                        }
                         Spacer()
-                        Image(systemName: "paperplane")
+                        
+                        Button {
+                            print("i want to talk with you")
+                        } label: {
+                            Image(systemName: "message")
+                                .foregroundColor(Color.black)
+                        }
                         Spacer()
-                        Image(systemName: "heart")
+                        Button {
+                            print("i like you")
+                        } label: {
+                            Image(systemName: "heart")
+                                .foregroundColor(Color.black)
+                        }
+
                         Spacer()
                     }
+                    .padding(.top, 4)
                 }
-                .padding(.horizontal, 12)
             }
         }
     }
@@ -50,9 +68,17 @@ struct MainPostsView: View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView{
                 LazyVStack {
+                    Button {
+                        print("refresh")
+                    } label: {
+                        Text("refresh")
+                    }
+
                     ForEach(0 ..< 30) {post in
                             PostView()
-                            .padding()
+                            .padding(.horizontal)
+                            .padding(.bottom, 2)
+                        
                         Divider()
                     }
                 }
