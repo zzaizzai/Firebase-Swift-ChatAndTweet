@@ -10,6 +10,7 @@
 		A645BBA2288A256F00DBF228 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A645BBA1288A256F00DBF228 /* MainTabView.swift */; };
 		A645BBA4288A2D6400DBF228 /* RecentMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A645BBA3288A2D6400DBF228 /* RecentMessagesView.swift */; };
 		A645BBA6288A36F300DBF228 /* MyProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A645BBA5288A36F300DBF228 /* MyProfileView.swift */; };
+		A645BBA8288AE88000DBF228 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A645BBA7288AE88000DBF228 /* ImagePicker.swift */; };
 		A65565C3288986380078296A /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A65565C2288986380078296A /* FirebaseAuth */; };
 		A65565C5288986380078296A /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A65565C4288986380078296A /* FirebaseFirestore */; };
 		A65565C7288986380078296A /* FirebaseFirestoreSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = A65565C6288986380078296A /* FirebaseFirestoreSwift-Beta */; };
@@ -29,6 +30,7 @@
 		A645BBA1288A256F00DBF228 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		A645BBA3288A2D6400DBF228 /* RecentMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentMessagesView.swift; sourceTree = "<group>"; };
 		A645BBA5288A36F300DBF228 /* MyProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyProfileView.swift; sourceTree = "<group>"; };
+		A645BBA7288AE88000DBF228 /* ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		A65565CA288986990078296A /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		A65565CC288987530078296A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		A65565CE28899F760078296A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				A6BC5D3A28882CD2005330F4 /* ChatAndTweetApp.swift */,
+				A645BBA7288AE88000DBF228 /* ImagePicker.swift */,
 				A65565CE28899F760078296A /* GoogleService-Info.plist */,
 				A6BC5D4828882EA4005330F4 /* LoginAndRegister.swift */,
 				A65565D028899FFD0078296A /* MainPostsView.swift */,
@@ -194,6 +197,7 @@
 				A65565D32889A05F0078296A /* Post.swift in Sources */,
 				A65565CD288987530078296A /* User.swift in Sources */,
 				A645BBA2288A256F00DBF228 /* MainTabView.swift in Sources */,
+				A645BBA8288AE88000DBF228 /* ImagePicker.swift in Sources */,
 				A6BC5D4928882EA4005330F4 /* LoginAndRegister.swift in Sources */,
 				A645BBA4288A2D6400DBF228 /* RecentMessagesView.swift in Sources */,
 			);
