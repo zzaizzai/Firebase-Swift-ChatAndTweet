@@ -7,54 +7,46 @@
 
 import SwiftUI
 
+
 struct MainTabView: View {
-    @State private var selectedIndex = 0
+    
+
+    
+//    @State private var selectedIndex: Int = 0
+    @State private var selectedTab = "home"
     
     var body: some View {
-        TabView() {
-            MainPostsView()
-                .onTapGesture {
-                    self.selectedIndex = 0
-                }
-                .tabItem {
-                    Image(systemName: "house")
-                }
-                .tag(0)
-                .navigationBarTitle("home")
-                .navigationBarTitleDisplayMode(.inline)
-            
-            RecentMessagesView()
-                .onTapGesture {
-                    self.selectedIndex = 1
-                }
-                .tabItem {
-                    Image(systemName: "message")
-                }
-                .tag(1)
-                .navigationBarTitle("good")
-                .navigationBarTitleDisplayMode(.inline)
-            
-            Text("My Page")
-                .onTapGesture {
-                    self.selectedIndex = 2
-                }
-                .tabItem {
-                    Image(systemName: "person")
-                }
-                .tag(2)
-                .navigationBarTitle("good")
-                .navigationBarTitleDisplayMode(.inline)
-            
-            Text("Setting Page")
-                .onTapGesture {
-                    self.selectedIndex = 3
-                }
-                .tabItem {
-                    Image(systemName: "gearshape")
-                }
-                .tag(3)
-                .navigationBarTitle("good")
-                .navigationBarTitleDisplayMode(.inline)
+        NavigationView {
+            TabView(selection: $selectedTab) {
+                MainPostsView()
+                    .tabItem {
+                        Image(systemName: "house")
+                        
+                    }
+                    .tag("home")
+                
+                RecentMessagesView()
+                    .tabItem {
+                        Image(systemName: "message")
+                    }
+                //                    .navigationBarTitle(Text("message"), displayMode: .inline)
+                    .tag("message")
+                
+                Text("My Page")
+                    .tabItem {
+                        Image(systemName: "person")
+                    }
+                //                    .navigationBarTitle(Text("my profile"), displayMode: .inline)
+                    .tag("profile")
+                
+                Text("Setting Page")
+                    .tabItem {
+                        Image(systemName: "gearshape")
+                    }
+                    .tag("setting")
+            }
+            .navigationBarTitle(selectedTab.description)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

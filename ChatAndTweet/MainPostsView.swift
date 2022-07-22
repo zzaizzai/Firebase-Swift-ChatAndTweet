@@ -66,22 +66,22 @@ struct PostView: View {
 struct MainPostsView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            ScrollView{
+            List{
                 LazyVStack {
-                    Button {
-                        print("refresh")
-                    } label: {
-                        Text("refresh")
-                    }
-
-                    ForEach(0 ..< 30) {post in
+                    ForEach(0 ..< 10) {post in
                             PostView()
                             .padding(.horizontal)
                             .padding(.bottom, 2)
                         
                         Divider()
                     }
+                    
                 }
+                .padding(.bottom, 32)
+            }
+            .listStyle(.plain)
+            .refreshable {
+                print("refresh")
             }
         }
     }
