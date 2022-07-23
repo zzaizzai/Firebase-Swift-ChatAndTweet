@@ -10,6 +10,18 @@ import Firebase
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
+struct Post: Identifiable, Codable {
+    
+    @DocumentID var id : String?
+    
+    let authorUid, content : String
+    let authorName, authorEmail : String
+    let date: Date
+    var likes: Int
+
+}
+
+
     
 class MainPostViewModel: ObservableObject {
     @Published var posts = [Post]()
@@ -126,7 +138,7 @@ struct MainPostsView: View {
                             Text("date")
                                 .foregroundColor(Color.gray)
                         }
-                        Text("content content content content content content content content content content content content ")
+                        Text(post.content)
                             .font(.system(size: 20))
                         
                         HStack{
