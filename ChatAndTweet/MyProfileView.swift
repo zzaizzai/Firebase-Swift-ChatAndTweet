@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
+import Firebase
 
 struct MyProfile {
     let uid, name, email, profileImageurl: String
@@ -15,11 +17,17 @@ struct MyProfile {
 class MyProfileViewModel: ObservableObject {
     @Published var currentUser: MyProfile?
     @Published var errorMessage = ""
+    @Published var isUserLoggedOut = false
     
     init() {
         
         fetchCurrentUser()
         
+    }
+    
+    func firebaseLogOut() {
+        try? Firebase.Auth.auth().signOut()
+        self.isUserLoggedOut = true
     }
     
     
@@ -53,7 +61,6 @@ class MyProfileViewModel: ObservableObject {
             self.errorMessage = "fetch done"
             FirebaseManager.shared.currentUser = User(uid: uid, name: name, email: email, profileImageurl: profileImageUrl, joinDate: joinDate)
             
-
             
         }
     }
@@ -61,6 +68,7 @@ class MyProfileViewModel: ObservableObject {
 
 struct MyProfileView: View {
     @ObservedObject private var vm = MyProfileViewModel()
+    @State var showOptions = false
     
     
     var body: some View {
@@ -69,18 +77,34 @@ struct MyProfileView: View {
                 LazyVStack(alignment: .leading) {
 
                     HStack{
-                        Image(systemName: "photo")
-                            .frame(width: 60, height: 60)
+                        WebImage(url: URL(string: vm.currentUser?.profileImageurl ?? "no url image"))
+                            .resizable()
+                            .frame(width: 65, height: 65)
+                            .scaledToFill()
                             .background(Color.black)
                             .cornerRadius(100)
                         
                         VStack(alignment: .leading){
-                            Text(vm.currentUser?.name ?? "my name")
-                                .font(.system(size: 25))
+                            HStack{
+                                Text(vm.currentUser?.name ?? "my name")
+                                    .font(.system(size: 25))
+                                
+                                Spacer()
+                                
+                                
+                                Button {
+                                    self.showOptions.toggle()
+                                } label: {
+                                    Image(systemName: "gearshape")
+                                        .foregroundColor(Color.black)
+                                }
+
+                            }
                             Text(vm.currentUser?.email ?? "my email")
                                 .foregroundColor(Color.gray)
                             Text("uid: \(vm.currentUser?.uid ?? "no uid")")
                             Text(vm.currentUser?.joinDate.description ?? "home")
+                            Text(FirebaseManager.shared.currentUser?.email ?? "Fireemail")
                         }
                         .padding(.leading, 10)
                     }
@@ -98,13 +122,28 @@ struct MyProfileView: View {
             VStack{
                 Text(vm.errorMessage)
                 ForEach(0 ..< 5) { post in
-                    Text("post")
+                    Text("my post")
                     
                 }
             }
         }
         .padding()
         .background(Color.white)
+        
+        .actionSheet(isPresented: $showOptions) {
+            .init(title: Text("setting"),
+                  buttons: [.destructive(Text("sign out"), action: {
+                vm.firebaseLogOut()
+            }), .cancel()
+                           ]
+        )}
+        
+        .fullScreenCover(isPresented: $vm.isUserLoggedOut) {
+            LoginView {
+                self.vm.isUserLoggedOut = false
+                self.vm.fetchCurrentUser()
+            }
+        }
     }
 }
 

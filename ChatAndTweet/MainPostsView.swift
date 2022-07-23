@@ -9,13 +9,14 @@ import SwiftUI
 import Firebase
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import SDWebImageSwiftUI
 
 struct Post: Identifiable, Codable {
     
     @DocumentID var id : String?
     
     let authorUid, content : String
-    let authorName, authorEmail : String
+    let authorName, authorEmail, authorProfileUrl : String
     let date: Date
     var likes: Int
 
@@ -38,7 +39,7 @@ class MainPostViewModel: ObservableObject {
         firestoreListener?.remove()
         self.posts.removeAll()
         
-        firestoreListener = FirebaseManager.shared.firestore.collection("posts").addSnapshotListener { querySnapshot, error in
+        firestoreListener = FirebaseManager.shared.firestore.collection("posts").order(by: "date").addSnapshotListener { querySnapshot, error in
             if let error = error {
                 print("\(error)")
                 return
@@ -61,6 +62,7 @@ class MainPostViewModel: ObservableObject {
                     print(error)
                     self.errorMessage = "\(error)"
                 }
+                
             })
             
         }
@@ -106,9 +108,14 @@ struct MainPostsView: View {
     }
     
     private var postsView: some View {
-        
-        ForEach(vm.posts) { post in
-            PostView(post: post )
+        VStack{
+            
+            Divider()
+            ForEach(vm.posts) { post in
+                PostView(post: post )
+                Divider()
+                
+            }
             
         }
         
@@ -122,24 +129,33 @@ struct MainPostsView: View {
             
             LazyVStack(alignment: .leading) {
                 HStack(alignment: .top) {
-                    Image(systemName: "person")
+                    
+                    WebImage(url: URL(string: post.authorProfileUrl))
                         .resizable()
                         .scaledToFill()
                         .background(Color.black)
                         .frame(width: 50, height: 50)
                         .cornerRadius(100)
+                    
                     VStack(alignment: .leading){
                         HStack{
                             Text(post.authorName)
-                                .font(.system(size: 25))
+                                .font(.system(size: 20))
                             
                             Spacer()
                             
-                            Text("date")
-                                .foregroundColor(Color.gray)
+                            VStack(alignment: .trailing){
+                                Text(post.date, style: .date)
+                                    .foregroundColor(Color.gray)
+                                    .font(.system(size: 12))
+                                
+                                Text(post.date, style: .time)
+                                    .foregroundColor(Color.gray)
+                                    .font(.system(size: 12))
+                            }
                         }
                         Text(post.content)
-                            .font(.system(size: 20))
+                            .font(.system(size: 18))
                         
                         HStack{
                             
@@ -167,8 +183,12 @@ struct MainPostsView: View {
                             Spacer()
                         }
                         .padding(.top, 4)
+                        
                     }
-                }
+                    
+                    
+                }.padding(.horizontal, 12)
+
             }
             
             
