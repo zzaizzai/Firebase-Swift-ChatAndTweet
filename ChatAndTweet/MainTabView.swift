@@ -7,12 +7,39 @@
 
 import SwiftUI
 
+class MainTabViewModel: ObservableObject {
+    @Published var isUserLoggedOut = false
+    @Published var currentUser: User?
+    
+
+    init() {
+        DispatchQueue.main.async {
+            self.isUserLoggedOut = FirebaseManager.shared.currentUser?.uid == nil
+        }
+        
+        
+    }
+    
+    func fetchCurrentUser() {
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+        FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
+            if let error = error {
+                print("\(error)")
+                return
+            }
+            
+            self.currentUser = try? snapshot?.data(as: User.self)
+            FirebaseManager.shared.currentUser = self.currentUser
+        }
+        
+    }
+}
+
 
 struct MainTabView: View {
     
 
-    
-//    @State private var selectedIndex: Int = 0
+    @ObservedObject var vm = MainTabViewModel()
     @State private var selectedTab = "home"
     
     var body: some View {
@@ -29,17 +56,15 @@ struct MainTabView: View {
                     .tabItem {
                         Image(systemName: "message")
                     }
-                //                    .navigationBarTitle(Text("message"), displayMode: .inline)
                     .tag("message")
                 
-                Text("My Page")
+                MyProfileView()
                     .tabItem {
                         Image(systemName: "person")
                     }
-                //                    .navigationBarTitle(Text("my profile"), displayMode: .inline)
                     .tag("profile")
                 
-                Text("Setting Page")
+                UploadNewPostView()
                     .tabItem {
                         Image(systemName: "gearshape")
                     }
@@ -47,6 +72,12 @@ struct MainTabView: View {
             }
             .navigationBarTitle(selectedTab.description)
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .fullScreenCover(isPresented: $vm.isUserLoggedOut) {
+            LoginView {
+                self.vm.isUserLoggedOut = false
+                
+            }
         }
     }
 }

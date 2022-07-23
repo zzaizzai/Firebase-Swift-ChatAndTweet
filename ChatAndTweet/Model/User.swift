@@ -12,4 +12,5 @@ struct User: Codable, Identifiable {
     
     @DocumentID var id : String?
     let uid, name, email, profileImageurl: String
+    let joinDate : Date
 }
