@@ -18,19 +18,19 @@ class UploadnewPostViewModel: ObservableObject {
             self.errorMessage = "no user"
             return }
         
-//        guard let email = FirebaseManager.shared.currentUser?.email else {
-//            self.errorMessage = "no email"
-//            return }
-//
-//        guard let name = FirebaseManager.shared.currentUser?.name else {
-//            self.errorMessage = "no name"
-//            return }
+        guard let email = FirebaseManager.shared.currentUser?.email else {
+            self.errorMessage = "no email"
+            return }
+
+        guard let name = FirebaseManager.shared.currentUser?.name else {
+            self.errorMessage = "no name"
+            return }
         
         
         let data =
         ["authorUid" : uid,
-         "authorName": "email",
-         "authorEmail" : "name",
+         "authorName": email,
+         "authorEmail" : name,
          "content": text,
          "likes": 0,
          "date" : Date(),

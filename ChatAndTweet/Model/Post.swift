@@ -8,13 +8,14 @@
 import Foundation
 import FirebaseFirestoreSwift
 
-struct Post: Identifiable, Codable {
-    
-    @DocumentID var id : String?
-    
-    let authorUid, content : String
-    let authorName, authorEmail : String
-    let date: Date
-    var likes: Int
-
-}
+//struct Post: Identifiable, Codable {
+//
+//    @DocumentID var id : String?
+//
+//    let authorUid, content : String
+//    let authorName, authorEmail : String
+//    let date: Date
+//    var likes: Int
+//
+//}
+//

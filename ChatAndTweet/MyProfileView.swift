@@ -7,8 +7,13 @@
 
 import SwiftUI
 
+struct MyProfile {
+    let uid, name, email, profileImageurl: String
+    let joinDate : Date
+}
+
 class MyProfileViewModel: ObservableObject {
-    @Published var currentUser: User?
+    @Published var currentUser: MyProfile?
     @Published var errorMessage = ""
     
     init() {
@@ -19,8 +24,10 @@ class MyProfileViewModel: ObservableObject {
     
     
     func fetchCurrentUser() {
+        
+        self.errorMessage = "fetching current user"
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
-//            self.errorMessage = "no user"
+            self.errorMessage = "no user1"
             return }
         
         FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
@@ -30,8 +37,23 @@ class MyProfileViewModel: ObservableObject {
                 return
             }
             
-            self.currentUser = try? snapshot?.data(as: User.self)
-            FirebaseManager.shared.currentUser = self.currentUser
+            
+            guard let data = snapshot?.data() else {
+                self.errorMessage = "no data"
+                return
+            }
+            
+            
+            let email = data["email"] as? String ?? "no email"
+            let name = data["name"] as? String ?? "no name"
+            let profileImageUrl = data["profileImageUrl"] as? String ?? "no image"
+            let joinDate = data["joinDate"] as? Date ?? Date()
+            
+            self.currentUser = MyProfile(uid: uid, name: name, email: email, profileImageurl: profileImageUrl, joinDate: joinDate)
+            self.errorMessage = "fetch done"
+            FirebaseManager.shared.currentUser = User(uid: uid, name: name, email: email, profileImageurl: profileImageUrl, joinDate: joinDate)
+            
+
             
         }
     }
@@ -45,7 +67,7 @@ struct MyProfileView: View {
         ScrollView{
             VStack {
                 LazyVStack(alignment: .leading) {
-                    Text(vm.errorMessage)
+
                     HStack{
                         Image(systemName: "photo")
                             .frame(width: 60, height: 60)
@@ -57,7 +79,8 @@ struct MyProfileView: View {
                                 .font(.system(size: 25))
                             Text(vm.currentUser?.email ?? "my email")
                                 .foregroundColor(Color.gray)
-                            Text(vm.currentUser?.uid ?? "uid")
+                            Text("uid: \(vm.currentUser?.uid ?? "no uid")")
+                            Text(vm.currentUser?.joinDate.description ?? "home")
                         }
                         .padding(.leading, 10)
                     }
@@ -73,6 +96,7 @@ struct MyProfileView: View {
             Divider()
             
             VStack{
+                Text(vm.errorMessage)
                 ForEach(0 ..< 5) { post in
                     Text("post")
                     

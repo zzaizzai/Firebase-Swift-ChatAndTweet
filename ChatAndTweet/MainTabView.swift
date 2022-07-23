@@ -66,7 +66,7 @@ struct MainTabView: View {
                 
                 UploadNewPostView()
                     .tabItem {
-                        Image(systemName: "gearshape")
+                        Image(systemName: "pencil")
                     }
                     .tag("setting")
             }
