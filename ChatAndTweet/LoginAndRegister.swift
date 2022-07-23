@@ -10,6 +10,7 @@ import Firebase
 
 
 struct RegisterView: View {
+    
     @State private var name = ""
     @State private var email = ""
     @State private var password = ""
@@ -196,8 +197,10 @@ struct RegisterView: View {
 }
 
 struct LoginView: View {
-    @State var email = ""
-    @State var password = ""
+    let didloginProcess: () -> ()
+    
+    @State var email = "test@test.com"
+    @State var password = "password"
     @State var errorMessage = ""
     @State var successMessage = ""
     
@@ -278,6 +281,8 @@ struct LoginView: View {
             
             self.successMessage = "logged in"
             self.errorMessage = ""
+            
+            self.didloginProcess()
         }
         
     }
@@ -290,6 +295,8 @@ struct LoginView: View {
 
 struct LoginAndRegister_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        LoginView(didloginProcess: {
+            
+        })
     }
 }

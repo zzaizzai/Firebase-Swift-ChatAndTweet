@@ -9,26 +9,43 @@ import SwiftUI
 
 class MyProfileViewModel: ObservableObject {
     @Published var currentUser: User?
+    @Published var errorMessage = ""
     
     init() {
+        
+        fetchCurrentUser()
         
     }
     
     
-//    func fetchCurrentUser() {
-//        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+    func fetchCurrentUser() {
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
+//            self.errorMessage = "no user"
+            return }
         
-//        FirebaseManager.shared.firestore.collection("users")
-//    }
+        FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
+            if let error = error {
+                print("\(error)")
+                self.errorMessage = "\(error)"
+                return
+            }
+            
+            self.currentUser = try? snapshot?.data(as: User.self)
+            FirebaseManager.shared.currentUser = self.currentUser
+            
+        }
+    }
 }
 
 struct MyProfileView: View {
+    @ObservedObject private var vm = MyProfileViewModel()
     
     
     var body: some View {
         ScrollView{
             VStack {
                 LazyVStack(alignment: .leading) {
+                    Text(vm.errorMessage)
                     HStack{
                         Image(systemName: "photo")
                             .frame(width: 60, height: 60)
@@ -36,11 +53,11 @@ struct MyProfileView: View {
                             .cornerRadius(100)
                         
                         VStack(alignment: .leading){
-                            Text("name")
+                            Text(vm.currentUser?.name ?? "my name")
                                 .font(.system(size: 25))
-                            Text("email")
+                            Text(vm.currentUser?.email ?? "my email")
                                 .foregroundColor(Color.gray)
-                            Text("content")
+                            Text(vm.currentUser?.uid ?? "uid")
                         }
                         .padding(.leading, 10)
                     }
