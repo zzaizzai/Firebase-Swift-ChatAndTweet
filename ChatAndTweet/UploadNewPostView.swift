@@ -6,10 +6,25 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 class UploadnewPostViewModel: ObservableObject {
     @Published var didUploadPost = false
     @Published var errorMessage = "error"
+    @Published var profileImageUrl = "none"
+    
+    init() {
+        
+        self.fetchCurrentUser()
+        
+        
+    }
+    
+    func fetchCurrentUser() {
+        guard let profileImageUrl = FirebaseManager.shared.currentUser?.profileImageurl else { return
+        }
+        self.profileImageUrl = profileImageUrl
+    }
     
     
     func uploadNewPost(text: String, completion: @escaping(Bool) -> Void) {
@@ -26,11 +41,16 @@ class UploadnewPostViewModel: ObservableObject {
             self.errorMessage = "no name"
             return }
         
+        guard let profileUrl = FirebaseManager.shared.currentUser?.profileImageurl else {
+            return
+        }
+        
         
         let data =
         ["authorUid" : uid,
          "authorName": email,
          "authorEmail" : name,
+         "authorProfileUrl": profileUrl,
          "content": text,
          "likes": 0,
          "date" : Date(),
@@ -63,15 +83,18 @@ struct UploadNewPostView: View {
     
     var body: some View {
         VStack{
-
-
-            TextField("hey", text: $newPostText)
-                .autocapitalization(.none)
-                .padding()
-            Spacer()
             
-            VStack{
-                Text(vm.errorMessage)
+            HStack{
+                
+                WebImage(url: URL(string: vm.profileImageUrl))
+                    .resizable()
+                    .frame(width: 55, height: 55)
+                    .scaledToFill()
+                    .background(Color.black)
+                    .cornerRadius(100)
+                    .padding()
+                
+                Spacer()
                 
                 Button {
                     vm.uploadNewPost(text: self.newPostText) { _ in
@@ -90,8 +113,21 @@ struct UploadNewPostView: View {
                 }
             }
             
+            Divider()
+            
+            TextField("what are you thinking", text: $newPostText)
+                .autocapitalization(.none)
+                .padding()
+            
+            Spacer()
+            
+            VStack{
+                Text(vm.errorMessage)
+                
+
+            }
+            
         }
-        .background(Color.gray)
     }
 }
 
