@@ -29,6 +29,16 @@ class UploadnewPostViewModel: ObservableObject {
     
     func uploadNewPost(text: String, completion: @escaping(Bool) -> Void) {
         
+        if text.count > 150 {
+            self.errorMessage = "less than 100 characters"
+            return
+        }
+        
+        if text.count < 5 {
+            self.errorMessage = "more than 5 characters"
+            return
+        }
+        
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
             self.errorMessage = "no user"
             return }
@@ -36,7 +46,7 @@ class UploadnewPostViewModel: ObservableObject {
         guard let email = FirebaseManager.shared.currentUser?.email else {
             self.errorMessage = "no email"
             return }
-
+        
         guard let name = FirebaseManager.shared.currentUser?.name else {
             self.errorMessage = "no name"
             return }
@@ -78,30 +88,37 @@ struct UploadNewPostView: View {
     
     
     @Environment(\.presentationMode) var presentationMode
-    @State private var newPostText = "new post"
+    @State private var newPostText = ""
     
     
     var body: some View {
         VStack{
             
             HStack{
-                
-                WebImage(url: URL(string: vm.profileImageUrl))
-                    .resizable()
-                    .frame(width: 55, height: 55)
-                    .scaledToFill()
-                    .background(Color.black)
-                    .cornerRadius(100)
-                    .padding()
+                Button {
+                    presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Text("Cancle")
+                        .font(.title)
+                        .padding(.horizontal)
+                }
+
                 
                 Spacer()
+                
+                if self.newPostText.count < 150 {
+                    Text(self.newPostText.count.description)
+                } else {
+                    Text(self.newPostText.count.description)
+                        .foregroundColor(Color.red)
+                }
                 
                 Button {
                     vm.uploadNewPost(text: self.newPostText) { _ in
                         presentationMode.wrappedValue.dismiss()
                         self.newPostText = ""
                     }
-
+                    
                 } label: {
                     Text("Upload")
                         .padding()
@@ -109,22 +126,54 @@ struct UploadNewPostView: View {
                         .background(Color.blue)
                         .cornerRadius(50)
                         .padding()
-
+                    
                 }
             }
             
             Divider()
             
-            TextField("what are you thinking", text: $newPostText)
-                .autocapitalization(.none)
-                .padding()
+            HStack(alignment: .top){
+                WebImage(url: URL(string: vm.profileImageUrl))
+                    .resizable()
+                    .frame(width: 55, height: 55)
+                    .scaledToFill()
+                    .background(Color.black)
+                    .cornerRadius(100)
+                    .padding(.horizontal, 10)
+                
+                
+                ZStack(alignment: .leading){
+                    TextEditor(text: self.$newPostText)
+                        .font(.system(size: 25))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 18)
+//                        .background(Color.gray)
+                    
+                    if self.newPostText.isEmpty {
+                        VStack{
+                            Text("What are you thinking about??")
+                                .foregroundColor(Color.gray)
+                                .font(.system(size: 25))
+                                .padding(.vertical, 25)
+                                .padding(.horizontal, 10)
+                                .zIndex(1)
+                            Spacer()
+                        }
+                    }
+                    
+                }
+                
+            }
+            
+            
             
             Spacer()
             
             VStack{
                 Text(vm.errorMessage)
+                    .padding()
                 
-
+                
             }
             
         }
