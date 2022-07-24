@@ -9,6 +9,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 import Firebase
 
+
 struct MyProfile {
     let uid, name, email, profileImageurl: String
     let joinDate : Date
@@ -18,11 +19,60 @@ class MyProfileViewModel: ObservableObject {
     @Published var currentUser: MyProfile?
     @Published var errorMessage = ""
     @Published var isUserLoggedOut = false
+    @Published var myPosts = [Post]()
+    @Published var firestoreListener : ListenerRegistration?
+    
     
     init() {
         
-        fetchCurrentUser()
+        DispatchQueue.main.async {
+            self.isUserLoggedOut = FirebaseManager.shared.currentUser?.uid == nil
+            
+            if self.currentUser?.uid == nil {
+                self.fetchCurrentUser()
+               
+            }
+            self.fetchMyPosts()
+        }
         
+
+        
+    }
+    
+    func fetchMyPosts() {
+        
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+        
+        firestoreListener?.remove()
+        self.myPosts.removeAll()
+        
+        firestoreListener = FirebaseManager.shared.firestore.collection("posts").whereField("authorUid", isEqualTo: uid).order(by: "date").addSnapshotListener { querySnapshot, error in
+            if let error = error {
+                print("\(error)")
+                return
+            }
+
+            querySnapshot?.documentChanges.forEach({ change in
+                let docId = change.document.documentID
+                if let index = self.myPosts.firstIndex(where: { rm in
+                    return rm.id == docId
+                }) {
+                    self.myPosts.remove(at: index)
+                    self.errorMessage = "fetch done2"
+                }
+                
+                do {
+                    let rm = try change.document.data(as: Post.self)
+                    self.myPosts.insert(rm, at: 0)
+                    self.errorMessage = "fetch done3"
+                } catch {
+                    print(error)
+                    self.errorMessage = "\(error)"
+                }
+                
+            })
+            
+        }
     }
     
     func firebaseLogOut() {
@@ -97,23 +147,30 @@ struct MyProfileView: View {
                                 } label: {
                                     Image(systemName: "gearshape")
                                         .foregroundColor(Color.black)
+                                        .font(.system(size: 25))
                                 }
 
                             }
                             Text(vm.currentUser?.email ?? "my email")
                                 .foregroundColor(Color.gray)
-                            Text("uid: \(vm.currentUser?.uid ?? "no uid")")
-                            Text(vm.currentUser?.joinDate.description ?? "home")
-                            Text(FirebaseManager.shared.currentUser?.email ?? "Fireemail")
+//                            Text("uid: \(vm.currentUser?.uid ?? "no uid")")
+//                            Text(vm.currentUser?.joinDate.description ?? "home")
+//                            Text(FirebaseManager.shared.currentUser?.email ?? "Fireemail")
                         }
                         .padding(.leading, 10)
                     }
+                    .padding(.horizontal)
                     
                     HStack{
+                        Spacer()
+                        
                         Text("100 following")
                             .fontWeight(.bold)
+                        
                         Text("100 follower")
                             .fontWeight(.bold)
+                        
+                        Spacer()
                     }
                 }
             }
@@ -121,13 +178,12 @@ struct MyProfileView: View {
             
             VStack{
                 Text(vm.errorMessage)
-                ForEach(0 ..< 5) { post in
-                    Text("my post")
+                ForEach(vm.myPosts) { post in
+                    PostView(post: post)
                     
                 }
             }
         }
-        .padding()
         .background(Color.white)
         
         .actionSheet(isPresented: $showOptions) {
