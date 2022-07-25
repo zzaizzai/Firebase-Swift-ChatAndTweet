@@ -119,6 +119,8 @@ class MyProfileViewModel: ObservableObject {
 struct MyProfileView: View {
     @ObservedObject private var vm = MyProfileViewModel()
     @State var showOptions = false
+    @State var currentFilter = "posts"
+    @Namespace var animation
     
     
     var body: some View {
@@ -176,13 +178,30 @@ struct MyProfileView: View {
             }
             Divider()
             
+            
+            
             VStack{
+                
+                filterBar
+                
                 Text(vm.errorMessage)
-                ForEach(vm.myPosts) { post in
-                    PostView(post: post)
+                
+                
+                
+                if currentFilter == "posts" {
                     
+                    ForEach(vm.myPosts) { post in
+                        PostView(post: post)
+                        
+                    }
+                    
+                } else {
+                    Text("liked posts")
                 }
+
             }
+            
+            
         }
         .background(Color.white)
         
@@ -201,10 +220,41 @@ struct MyProfileView: View {
             }
         }
     }
+    
+    
+    let filters = ["posts", "liked"]
+    
+    var filterBar: some View {
+        HStack{
+            
+            ForEach(filters, id: \.self) { filter in
+                VStack{
+                    Text(filter)
+                    
+                    if currentFilter == filter {
+                        Capsule()
+                            .foregroundColor(Color.gray)
+                            
+                    } else {
+                        Capsule()
+                            .foregroundColor(Color.clear)
+                    }
+                }
+                .onTapGesture {
+                    withAnimation(.spring()){
+                        self.currentFilter = filter
+                        
+                    }
+                }
+                
+            }
+        }
+    }
 }
 
 struct MyProfileView_Previews: PreviewProvider {
     static var previews: some View {
+//        MyProfileView()
         MyProfileView()
     }
 }
