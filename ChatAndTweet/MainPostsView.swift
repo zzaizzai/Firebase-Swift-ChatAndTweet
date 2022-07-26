@@ -19,11 +19,13 @@ struct Post: Identifiable, Codable {
     let authorName, authorEmail, authorProfileUrl : String
     let date: Date
     var likes: Int
-
+    
+    var didLike: Bool? = false
+    
 }
 
 
-    
+
 class MainPostViewModel: ObservableObject {
     @Published var posts = [Post]()
     
@@ -33,6 +35,8 @@ class MainPostViewModel: ObservableObject {
         fetchPosts()
         
     }
+    
+    
     
     func fetchPosts() {
         
@@ -44,7 +48,7 @@ class MainPostViewModel: ObservableObject {
                 print("\(error)")
                 return
             }
-
+            
             querySnapshot?.documentChanges.forEach({ change in
                 let docId = change.document.documentID
                 if let index = self.posts.firstIndex(where: { rm in
@@ -70,10 +74,22 @@ class MainPostViewModel: ObservableObject {
     }
     
     func fetchILikedItOrNot() {
+        //        var likesUid = []
+        guard let myUid = FirebaseManager.shared.currentUser?.uid else { return }
+        
+        FirebaseManager.shared.firestore.collection(myUid).document("likePosts").getDocument { snapshot, error in
+            if let error = error {
+                print(error)
+                return
+            }
+            //            likesUid.append(snapshot)
+            
+            
+        }
         
         
     }
-
+    
     
 }
 
@@ -151,6 +167,8 @@ struct MainPostsView: View {
 struct PostView: View {
     
     var post: Post
+    @ObservedObject var vm = MainPostViewModel()
+    
     
     var body: some View{
         
@@ -187,7 +205,7 @@ struct PostView: View {
                     HStack{
                         
                         Button {
-                            print("i like you")
+                            print("repost in my profile")
                         } label: {
                             Image(systemName: "arrow.counterclockwise")
                                 .foregroundColor(Color.black)
@@ -201,11 +219,20 @@ struct PostView: View {
                                 .foregroundColor(Color.black)
                         }
                         Spacer()
-                        Button {
-                            print("i like you")
-                        } label: {
-                            Image(systemName: "heart")
-                                .foregroundColor(Color.black)
+                        if post.didLike == true {
+                            Button {
+                                likeButton(postUid: post.id ?? "post id")
+                            } label: {
+                                Image(systemName: "heart.fill")
+                                    .foregroundColor(Color.red)
+                            }
+                        } else {
+                            Button {
+                                likeButton(postUid: post.id ?? "post id")
+                            } label: {
+                                Image(systemName: "heart")
+                                    .foregroundColor(Color.black)
+                            }
                         }
                         Spacer()
                     }
@@ -215,9 +242,37 @@ struct PostView: View {
                 
                 
             }.padding(.horizontal, 12)
-
+            
         }
         
+        
+    }
+    
+    func likeButton(postUid: String) {
+        print(postUid)
+        
+        guard let myUid = FirebaseManager.shared.currentUser?.uid else { return }
+        
+        let data = [
+            "postUid" : postUid,
+            "date" : Date(),
+            
+        ] as [String : Any]
+        
+        FirebaseManager.shared.firestore.collection("likes").document(myUid).collection("likePosts").document(postUid).setData(data) { error in
+            if let error = error {
+                print(error)
+                return
+            }
+            print("like done")
+        }
+        
+    }
+    
+    func dislikeButton(postUid: String) {
+        print(postUid)
+        
+        //delete the document
         
     }
     
@@ -229,6 +284,6 @@ struct PostView: View {
 struct MainPostsView_Previews: PreviewProvider {
     static var previews: some View {
         MainPostsView()
-//        PostView()
+        //        PostView()
     }
 }
