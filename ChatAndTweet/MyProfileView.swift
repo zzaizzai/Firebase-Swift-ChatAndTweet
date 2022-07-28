@@ -8,11 +8,51 @@
 import SwiftUI
 import SDWebImageSwiftUI
 import Firebase
+import FirebaseFirestoreSwift
 
 
 struct MyProfile {
     let uid, name, email, profileImageurl: String
     let joinDate : Date
+}
+
+//struct MyLikedPost: Identifiable {
+//
+//    var id: String {documentId}
+//    let documentId: String
+//
+//    let authorUid, content : String
+//    let authorName, authorEmail : String
+//    let authorProfileUrl : String
+//    let date: Date
+//    var likes: Int
+//    var liked: Bool
+//
+//    init(documentId: String, data: [String:Any]) {
+//        self.documentId = documentId
+//
+//        self.content = data["content"] as? String ?? "no content"
+//        self.authorUid = data["authorId"] as? String ?? "no authorId"
+//        self.authorName = data["authorName"] as? String ?? "no authorName"
+//        self.authorEmail = data["authorEmail"] as? String ?? "no authorEmail"
+//        self.authorProfileUrl = data["authorProfileUrl"] as? String ?? "no authorProfileUrl"
+//        self.date = data["date"] as? Date ?? Date()
+//        self.likes = data["likes"] as? Int ?? 0
+//        self.liked = data["liked"] as? Bool ?? false
+//    }
+//}
+
+struct likedPostsUid: Identifiable {
+    
+    var id :String { documentId }
+    let documentId: String
+    let postUid: String
+    
+    init(documentId: String, data: [String:Any]) {
+        self.documentId = documentId
+        self.postUid = data["postUid"] as? String ?? "no postUid"
+    }
+    
 }
 
 class MyProfileViewModel: ObservableObject {
@@ -21,6 +61,8 @@ class MyProfileViewModel: ObservableObject {
     @Published var isUserLoggedOut = false
     @Published var myPosts = [Post]()
     @Published var firestoreListener : ListenerRegistration?
+    @Published var myLikedPostsUid = [likedPostsUid]()
+    @Published var myLikedPosts = [Post]()
     
     
     init() {
@@ -32,10 +74,62 @@ class MyProfileViewModel: ObservableObject {
                 self.fetchCurrentUser()
                
             }
-            self.fetchMyPosts()
         }
         
+        self.fetchMyPosts()
+        self.fetchLikedPostsUid()
+        
+        
+    }
+    
+    func fetchLikedPostsUid() {
+        
+        var likedPostsUid = [likedPostsUid]()
+        
+        guard let myUid = FirebaseManager.shared.currentUser?.uid else {
+            self.errorMessage = "no user"
+            return
+            
+        }
+        
+        FirebaseManager.shared.firestore.collection("likes").document(myUid).collection("likePosts").order(by: "date").addSnapshotListener { snapshot, error in
+            if let error = error {
+                self.errorMessage = "Failed to fetchLikedPosts: \(error)"
+                return
+            }
+            snapshot?.documentChanges.forEach({ change in
+                if change.type == .added {
+                    let data = change.document.data()
+                    likedPostsUid.append(.init(documentId: change.document.documentID, data: data))
+                    self.myLikedPostsUid.append(.init(documentId: change.document.documentID, data: data))
+                    print("fetchLikedPosts done")
+                    print(data.description)
+                    self.errorMessage = "likedposts done"
+                    
+                    self.fetchLikedPosts(postUid: data["postUid"] as! String)
+                    
+                }
+            })
+        }
+    }
+    
+    func fetchLikedPosts(postUid: String) {
+        FirebaseManager.shared.firestore.collection("posts").document(postUid).getDocument { documentSnapshot, error in
+            if let error = error {
+                print(error)
+                return
+            }
+            
 
+            do {
+                let data = try documentSnapshot?.data(as: Post.self)
+                self.myLikedPosts.insert(data!, at: 0)
+            } catch {
+                print(error)
+            }
+            
+        }
+        
         
     }
     
@@ -196,7 +290,20 @@ struct MyProfileView: View {
                     }
                     
                 } else {
-                    Text("liked posts")
+                    VStack{
+
+                        Button {
+                            vm.fetchLikedPostsUid()
+                        } label: {
+                            Text("fetchLikedPosts")
+                        }
+                        
+                        ForEach(vm.myLikedPosts) { mylikpost in
+                            PostView(post: mylikpost)
+                        }
+
+                    }
+
                 }
 
             }
@@ -241,12 +348,9 @@ struct MyProfileView: View {
                     }
                 }
                 .onTapGesture {
-                    withAnimation(.spring()){
-                        self.currentFilter = filter
+                    self.currentFilter = filter
                         
-                    }
                 }
-                
             }
         }
     }
