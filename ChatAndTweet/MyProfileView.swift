@@ -23,10 +23,12 @@ struct likedPostsUid: Identifiable {
     var id :String { documentId }
     let documentId: String
     let postUid: String
+    let postDate: Date
     
     init(documentId: String, data: [String:Any]) {
         self.documentId = documentId
         self.postUid = data["postUid"] as? String ?? "no postUid"
+        self.postDate = data["postDate"] as? Date ?? Date()
     }
     
 }
@@ -62,13 +64,14 @@ class MyProfileViewModel: ObservableObject {
         
         var likedPostsUid = [likedPostsUid]()
         
+
         guard let myUid = FirebaseManager.shared.currentUser?.uid else {
             self.errorMessage = "no user"
             return
             
         }
         
-        FirebaseManager.shared.firestore.collection("likes").document(myUid).collection("likePosts").order(by: "date").addSnapshotListener { snapshot, error in
+        FirebaseManager.shared.firestore.collection("likes").document(myUid).collection("likePosts").order(by: "postDate").addSnapshotListener { snapshot, error in
             if let error = error {
                 self.errorMessage = "Failed to fetchLikedPosts: \(error)"
                 return
@@ -83,10 +86,13 @@ class MyProfileViewModel: ObservableObject {
                     self.errorMessage = "likedposts done"
                     
                     self.fetchLikedPosts(postUid: data["postUid"] as! String)
-                    
+
                 }
+
             })
+            
         }
+        
     }
     
     func fetchLikedPosts(postUid: String) {
@@ -99,7 +105,7 @@ class MyProfileViewModel: ObservableObject {
 
             do {
                 let data = try documentSnapshot?.data(as: Post.self)
-                self.myLikedPosts.insert(data!, at: 0)
+                self.myLikedPosts.append(data!)
             } catch {
                 print(error)
             }
@@ -221,7 +227,6 @@ struct MyProfileView: View {
                                         .foregroundColor(Color.black)
                                         .font(.system(size: 25))
                                 }
-
                             }
                             Text(vm.currentUser?.email ?? "my email")
                                 .foregroundColor(Color.gray)
@@ -335,6 +340,7 @@ struct MyProfileView: View {
 struct MyProfileView_Previews: PreviewProvider {
     static var previews: some View {
 //        MyProfileView()
-        MyProfileView()
+//        MyProfileView()
+        MainTabView()
     }
 }

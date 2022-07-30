@@ -146,18 +146,18 @@ struct MainPostsView: View {
     
 }
 class PostViewModel: ObservableObject {
-    @Published var noCheckPost : Post
+    @Published var mainPost : Post
     
     init(noCheckPost: Post) {
-        self.noCheckPost = noCheckPost
+        self.mainPost = noCheckPost
         checkLikedOfPost()
     }
     
     
     func checkLikedOfPost() {
-        checkILikedItOrNot(postNoCheckLiked: noCheckPost) { didLike in
+        checkILikedItOrNot(postNoCheckLiked: mainPost) { didLike in
             if didLike {
-                self.noCheckPost.didLike = true
+                self.mainPost.didLike = true
             }
         }
     }
@@ -178,6 +178,50 @@ class PostViewModel: ObservableObject {
         }
     }
     
+    func unLikeButton() {
+        
+        
+        guard let myUid = FirebaseManager.shared.currentUser?.uid else { return }
+        guard let postUid = self.mainPost.id else { return }
+        
+        FirebaseManager.shared.firestore.collection("likes").document(myUid).collection("likePosts").document(postUid).delete { error in
+            if let error = error {
+                print("\(error)")
+                return
+            }
+        }
+        
+        self.mainPost.didLike = false
+        
+        
+        
+    }
+    
+    func likeButton() {
+        
+        
+        guard let myUid = FirebaseManager.shared.currentUser?.uid else { return }
+        guard let postUid = self.mainPost.id else { return }
+        
+        let data = [
+            "postUid" : postUid,
+            "date" : Date(),
+            "postDate": mainPost.date
+            
+        ] as [String : Any]
+        
+        FirebaseManager.shared.firestore.collection("likes").document(myUid).collection("likePosts").document(postUid).setData(data) { error in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            print("like done")
+            self.mainPost.didLike = true
+        }
+        
+    }
+    
 }
 
 struct PostView: View {
@@ -193,7 +237,7 @@ struct PostView: View {
     var body: some View{
         
         LazyVStack(alignment: .leading) {
-            if let post = self.vm.noCheckPost {
+            if let post = self.vm.mainPost {
                 HStack(alignment: .top) {
                     
                     WebImage(url: URL(string: post.authorProfileUrl))
@@ -242,14 +286,14 @@ struct PostView: View {
                             Spacer()
                             if post.didLike == true {
                                 Button {
-                                    likeButton(postUid: post.id ?? "post id")
+                                    vm.unLikeButton()
                                 } label: {
                                     Image(systemName: "heart.fill")
                                         .foregroundColor(Color.red)
                                 }
                             } else {
                                 Button {
-                                    likeButton(postUid: post.id ?? "post id")
+                                    vm.likeButton()
                                 } label: {
                                     Image(systemName: "heart")
                                         .foregroundColor(Color.black)
@@ -271,46 +315,8 @@ struct PostView: View {
         
     }
     
-    func likeButton(postUid: String) {
-        print(postUid)
-        
-        guard let myUid = FirebaseManager.shared.currentUser?.uid else { return }
-        
-        let data = [
-            "postUid" : postUid,
-            "date" : Date(),
-            
-        ] as [String : Any]
-        
-        FirebaseManager.shared.firestore.collection("likes").document(myUid).collection("likePosts").document(postUid).setData(data) { error in
-            if let error = error {
-                print(error)
-                return
-            }
-            print("like done")
-        }
-        
-    }
     
-    func dislikeButton(postUid: String) {
-        print(postUid)
-        
-        //delete the document
-        
-    }
     
-    //    func checkLikedOrNot(post: Post) {
-    //
-    //        FirebaseManager.shared.firestore.collection("likes").document((post.id ?? "no uid") as String).getDocument { documentSnapshot, error in
-    //            if let error = error {
-    //                print("Failed to check like or not\(error)")
-    //                return
-    //            }
-    //            guard documentSnapshot != nil else { return }
-    //            self.post.didLike =  true
-    //        }
-    //
-    //    }
     
 }
 
@@ -319,7 +325,8 @@ struct PostView: View {
 
 struct MainPostsView_Previews: PreviewProvider {
     static var previews: some View {
-        MainPostsView()
-        //        PostView()
+        //        MainPostsView()
+        //                PostView()
+        MainTabView()
     }
 }
