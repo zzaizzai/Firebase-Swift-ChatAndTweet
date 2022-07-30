@@ -16,31 +16,7 @@ struct MyProfile {
     let joinDate : Date
 }
 
-//struct MyLikedPost: Identifiable {
-//
-//    var id: String {documentId}
-//    let documentId: String
-//
-//    let authorUid, content : String
-//    let authorName, authorEmail : String
-//    let authorProfileUrl : String
-//    let date: Date
-//    var likes: Int
-//    var liked: Bool
-//
-//    init(documentId: String, data: [String:Any]) {
-//        self.documentId = documentId
-//
-//        self.content = data["content"] as? String ?? "no content"
-//        self.authorUid = data["authorId"] as? String ?? "no authorId"
-//        self.authorName = data["authorName"] as? String ?? "no authorName"
-//        self.authorEmail = data["authorEmail"] as? String ?? "no authorEmail"
-//        self.authorProfileUrl = data["authorProfileUrl"] as? String ?? "no authorProfileUrl"
-//        self.date = data["date"] as? Date ?? Date()
-//        self.likes = data["likes"] as? Int ?? 0
-//        self.liked = data["liked"] as? Bool ?? false
-//    }
-//}
+
 
 struct likedPostsUid: Identifiable {
     
@@ -130,8 +106,8 @@ class MyProfileViewModel: ObservableObject {
             
         }
         
-        
     }
+    
     
     func fetchMyPosts() {
         
@@ -285,7 +261,7 @@ struct MyProfileView: View {
                 if currentFilter == "posts" {
                     
                     ForEach(vm.myPosts) { post in
-                        PostView(post: post)
+                        PostView(noCheckPost: post)
                         
                     }
                     
@@ -299,7 +275,7 @@ struct MyProfileView: View {
                         }
                         
                         ForEach(vm.myLikedPosts) { mylikpost in
-                            PostView(post: mylikpost)
+                            PostView(noCheckPost: mylikpost)
                         }
 
                     }

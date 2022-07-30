@@ -50,6 +50,7 @@ class MainPostViewModel: ObservableObject {
             }
             
             querySnapshot?.documentChanges.forEach({ change in
+                
                 let docId = change.document.documentID
                 if let index = self.posts.firstIndex(where: { rm in
                     return rm.id == docId
@@ -72,24 +73,6 @@ class MainPostViewModel: ObservableObject {
         }
         
     }
-    
-    func fetchILikedItOrNot() {
-        //        var likesUid = []
-        guard let myUid = FirebaseManager.shared.currentUser?.uid else { return }
-        
-        FirebaseManager.shared.firestore.collection(myUid).document("likePosts").getDocument { snapshot, error in
-            if let error = error {
-                print(error)
-                return
-            }
-            //            likesUid.append(snapshot)
-            
-            
-        }
-        
-        
-    }
-    
     
 }
 
@@ -152,7 +135,7 @@ struct MainPostsView: View {
             
             Divider()
             ForEach(vm.posts) { post in
-                PostView(post: post )
+                PostView(noCheckPost: post)
                 Divider()
                 
             }
@@ -162,86 +145,126 @@ struct MainPostsView: View {
     }
     
 }
-
+class PostViewModel: ObservableObject {
+    @Published var noCheckPost : Post
+    
+    init(noCheckPost: Post) {
+        self.noCheckPost = noCheckPost
+        checkLikedOfPost()
+    }
+    
+    
+    func checkLikedOfPost() {
+        checkILikedItOrNot(postNoCheckLiked: noCheckPost) { didLike in
+            if didLike {
+                self.noCheckPost.didLike = true
+            }
+        }
+    }
+    
+    func checkILikedItOrNot( postNoCheckLiked: Post, completion: @escaping(Bool)-> Void) {
+        
+        guard let postId = postNoCheckLiked.id else { return }
+        guard let myUid = FirebaseManager.shared.currentUser?.uid else { return }
+        
+        FirebaseManager.shared.firestore.collection("likes").document(myUid).collection("likePosts").document(postId).getDocument { snapshot, error in
+            if let error = error {
+                print("\(error)")
+                return }
+            guard let snapshot = snapshot else { return }
+            completion(snapshot.exists)
+            
+            
+        }
+    }
+    
+}
 
 struct PostView: View {
     
-    var post: Post
-    @ObservedObject var vm = MainPostViewModel()
+    @ObservedObject var vm : PostViewModel
+    
+    
+    init(noCheckPost: Post){
+        self.vm = PostViewModel(noCheckPost: noCheckPost)
+    }
     
     
     var body: some View{
         
         LazyVStack(alignment: .leading) {
-            HStack(alignment: .top) {
-                
-                WebImage(url: URL(string: post.authorProfileUrl))
-                    .resizable()
-                    .scaledToFill()
-                    .background(Color.black)
-                    .frame(width: 50, height: 50)
-                    .cornerRadius(100)
-                
-                VStack(alignment: .leading){
-                    HStack{
-                        Text(post.authorName)
-                            .font(.system(size: 20))
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .trailing){
-                            Text(post.date, style: .date)
-                                .foregroundColor(Color.gray)
-                                .font(.system(size: 12))
-                            
-                            Text(post.date, style: .time)
-                                .foregroundColor(Color.gray)
-                                .font(.system(size: 12))
-                        }
-                    }
-                    Text(post.content)
-                        .font(.system(size: 18))
+            if let post = self.vm.noCheckPost {
+                HStack(alignment: .top) {
                     
-                    HStack{
-                        
-                        Button {
-                            print("repost in my profile")
-                        } label: {
-                            Image(systemName: "arrow.counterclockwise")
-                                .foregroundColor(Color.black)
-                        }
-                        Spacer()
-                        
-                        Button {
-                            print("i want to talk with you")
-                        } label: {
-                            Image(systemName: "message")
-                                .foregroundColor(Color.black)
-                        }
-                        Spacer()
-                        if post.didLike == true {
-                            Button {
-                                likeButton(postUid: post.id ?? "post id")
-                            } label: {
-                                Image(systemName: "heart.fill")
-                                    .foregroundColor(Color.red)
+                    WebImage(url: URL(string: post.authorProfileUrl))
+                        .resizable()
+                        .scaledToFill()
+                        .background(Color.black)
+                        .frame(width: 50, height: 50)
+                        .cornerRadius(100)
+                    
+                    VStack(alignment: .leading){
+                        HStack{
+                            Text(post.authorName)
+                                .font(.system(size: 20))
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing){
+                                Text(post.date, style: .date)
+                                    .foregroundColor(Color.gray)
+                                    .font(.system(size: 12))
+                                
+                                Text(post.date, style: .time)
+                                    .foregroundColor(Color.gray)
+                                    .font(.system(size: 12))
                             }
-                        } else {
+                        }
+                        Text(post.content)
+                            .font(.system(size: 18))
+                        
+                        HStack{
+                            
                             Button {
-                                likeButton(postUid: post.id ?? "post id")
+                                print("repost in my profile")
                             } label: {
-                                Image(systemName: "heart")
+                                Image(systemName: "arrow.counterclockwise")
                                     .foregroundColor(Color.black)
                             }
+                            Spacer()
+                            
+                            Button {
+                                print("i want to talk with you")
+                            } label: {
+                                Image(systemName: "message")
+                                    .foregroundColor(Color.black)
+                            }
+                            Spacer()
+                            if post.didLike == true {
+                                Button {
+                                    likeButton(postUid: post.id ?? "post id")
+                                } label: {
+                                    Image(systemName: "heart.fill")
+                                        .foregroundColor(Color.red)
+                                }
+                            } else {
+                                Button {
+                                    likeButton(postUid: post.id ?? "post id")
+                                } label: {
+                                    Image(systemName: "heart")
+                                        .foregroundColor(Color.black)
+                                }
+                            }
+                            Text(post.likes.description)
+                            Spacer()
                         }
-                        Spacer()
+                        .padding(.top, 4)
+                        
                     }
-                    .padding(.top, 4)
                     
-                }
-                
-                
-            }.padding(.horizontal, 12)
+                    
+                }.padding(.horizontal, 12)
+            }
             
         }
         
@@ -275,6 +298,19 @@ struct PostView: View {
         //delete the document
         
     }
+    
+    //    func checkLikedOrNot(post: Post) {
+    //
+    //        FirebaseManager.shared.firestore.collection("likes").document((post.id ?? "no uid") as String).getDocument { documentSnapshot, error in
+    //            if let error = error {
+    //                print("Failed to check like or not\(error)")
+    //                return
+    //            }
+    //            guard documentSnapshot != nil else { return }
+    //            self.post.didLike =  true
+    //        }
+    //
+    //    }
     
 }
 
