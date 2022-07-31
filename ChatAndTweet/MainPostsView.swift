@@ -11,6 +11,7 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import SDWebImageSwiftUI
 
+
 struct Post: Identifiable, Codable {
     
     @DocumentID var id : String?
@@ -25,7 +26,6 @@ struct Post: Identifiable, Codable {
 }
 
 
-
 class MainPostViewModel: ObservableObject {
     @Published var posts = [Post]()
     
@@ -35,8 +35,6 @@ class MainPostViewModel: ObservableObject {
         fetchPosts()
         
     }
-    
-    
     
     func fetchPosts() {
         
@@ -71,7 +69,6 @@ class MainPostViewModel: ObservableObject {
             })
             
         }
-        
     }
     
 }
@@ -145,6 +142,7 @@ struct MainPostsView: View {
     }
     
 }
+
 class PostViewModel: ObservableObject {
     @Published var mainPost : Post
     
@@ -180,7 +178,6 @@ class PostViewModel: ObservableObject {
     
     func unLikeButton() {
         
-        
         guard let myUid = FirebaseManager.shared.currentUser?.uid else { return }
         guard let postUid = self.mainPost.id else { return }
         
@@ -193,12 +190,9 @@ class PostViewModel: ObservableObject {
         
         self.mainPost.didLike = false
         
-        
-        
     }
     
     func likeButton() {
-        
         
         guard let myUid = FirebaseManager.shared.currentUser?.uid else { return }
         guard let postUid = self.mainPost.id else { return }
@@ -223,6 +217,7 @@ class PostViewModel: ObservableObject {
     }
     
 }
+
 
 struct PostView: View {
     
@@ -301,6 +296,7 @@ struct PostView: View {
                             }
                             Text(post.likes.description)
                             Spacer()
+                            
                         }
                         .padding(.top, 4)
                         
@@ -312,11 +308,7 @@ struct PostView: View {
             
         }
         
-        
     }
-    
-    
-    
     
 }
 

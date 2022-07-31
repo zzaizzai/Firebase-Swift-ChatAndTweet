@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A641A3B628963D190016041C /* ChatMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A641A3B528963D190016041C /* ChatMessagesView.swift */; };
 		A645BBA2288A256F00DBF228 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A645BBA1288A256F00DBF228 /* MainTabView.swift */; };
 		A645BBA4288A2D6400DBF228 /* RecentMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A645BBA3288A2D6400DBF228 /* RecentMessagesView.swift */; };
 		A645BBA6288A36F300DBF228 /* MyProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A645BBA5288A36F300DBF228 /* MyProfileView.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A641A3B528963D190016041C /* ChatMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessagesView.swift; sourceTree = "<group>"; };
 		A645BBA1288A256F00DBF228 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		A645BBA3288A2D6400DBF228 /* RecentMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentMessagesView.swift; sourceTree = "<group>"; };
 		A645BBA5288A36F300DBF228 /* MyProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyProfileView.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				A645BBA1288A256F00DBF228 /* MainTabView.swift */,
 				A645BBA5288A36F300DBF228 /* MyProfileView.swift */,
 				A645BBA3288A2D6400DBF228 /* RecentMessagesView.swift */,
+				A641A3B528963D190016041C /* ChatMessagesView.swift */,
 				A6BC5D3E28882CD3005330F4 /* Assets.xcassets */,
 				A65565CA288986990078296A /* FirebaseManager.swift */,
 				A645BBA0288A23EE00DBF228 /* Model */,
@@ -201,6 +204,7 @@
 				A645BBA6288A36F300DBF228 /* MyProfileView.swift in Sources */,
 				A65565D128899FFD0078296A /* MainPostsView.swift in Sources */,
 				A6BC5D3B28882CD2005330F4 /* ChatAndTweetApp.swift in Sources */,
+				A641A3B628963D190016041C /* ChatMessagesView.swift in Sources */,
 				A65565D32889A05F0078296A /* Post.swift in Sources */,
 				A65565CD288987530078296A /* User.swift in Sources */,
 				A645BBA2288A256F00DBF228 /* MainTabView.swift in Sources */,
