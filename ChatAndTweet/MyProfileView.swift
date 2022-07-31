@@ -230,25 +230,13 @@ struct MyProfileView: View {
                             }
                             Text(vm.currentUser?.email ?? "my email")
                                 .foregroundColor(Color.gray)
-//                            Text("uid: \(vm.currentUser?.uid ?? "no uid")")
-//                            Text(vm.currentUser?.joinDate.description ?? "home")
-//                            Text(FirebaseManager.shared.currentUser?.email ?? "Fireemail")
+                            
+                            Text("Join Date: \(vm.currentUser?.joinDate ?? Date(), style: .date)")
                         }
                         .padding(.leading, 10)
                     }
                     .padding(.horizontal)
-                    
-                    HStack{
-                        Spacer()
-                        
-                        Text("100 following")
-                            .fontWeight(.bold)
-                        
-                        Text("100 follower")
-                            .fontWeight(.bold)
-                        
-                        Spacer()
-                    }
+
                 }
             }
             Divider()
@@ -282,14 +270,9 @@ struct MyProfileView: View {
                         ForEach(vm.myLikedPosts) { mylikpost in
                             PostView(noCheckPost: mylikpost)
                         }
-
                     }
-
                 }
-
             }
-            
-            
         }
         .background(Color.white)
         
